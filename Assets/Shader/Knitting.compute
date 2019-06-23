@@ -1,0 +1,123 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel Clear
+#pragma kernel Copy
+#pragma kernel Sum
+#pragma kernel Error
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+RWTexture2D<float4> SourceImage;
+RWTexture2D<float4> TempBuffer;
+
+int UpLimit;
+
+bool pingpong;
+int max_offset;
+
+float soureImageGray;
+float currentImageGray;
+RWStructuredBuffer<float> TotalGrayBuffer;
+
+struct PinNode
+{
+	int x;
+	int y;
+};
+StructuredBuffer<PinNode> PinBuffer;
+StructuredBuffer<int> PathBuffer;
+
+[numthreads(8, 8, 1)]
+void Clear(uint3 id : SV_DispatchThreadID)
+{
+	Result[id.xy] = float4(1.0, 1.0, 1.0, 1.0);
+}
+
+[numthreads(8, 8, 1)]
+void Copy(uint3 id : SV_DispatchThreadID)
+{
+	TempBuffer[id.xy] = Result[id.xy];
+}
+
+void DrawLine(PinNode begin, PinNode end, float4 color)
+{
+	int x0 = begin.x;
+	int y0 = begin.y;
+	int x1 = end.x;
+	int y1 = end.y;
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+	int steps;
+	if (abs(dy) > abs(dx))
+	{
+		steps = abs(dy);
+	}
+	else
+	{
+		steps = abs(dx);
+	}
+	float xinc = float(dx) / steps;
+	float yinc = float(dy) / steps;
+	Result[uint2(y0, x0)] = color;
+	float x = x0;
+	float y = y0;
+	for (int i = 0; i < steps; i++)
+	{
+		x += xinc;
+		y += yinc;
+		Result[uint2(y, x)] = color;
+	}
+}
+
+[numthreads(16, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	if (id.x > UpLimit -1)
+		return;
+	int beginNodeId = PathBuffer[id.x];
+	int endNodeId = PathBuffer[id.x+1];
+	PinNode begin = PinBuffer[beginNodeId];
+	PinNode end = PinBuffer[endNodeId];
+	DrawLine(begin, end, float4(0.0f,0.0f,0.0f,1.0f));
+}
+
+
+[numthreads(8, 8, 1)]
+void Sum(uint3 globalid : SV_DispatchThreadID)
+{
+	uint2 lauchid = uint2(globalid.x, globalid.y);
+	int fetchx = 8 * globalid.x;
+	int fetchy = 8 * globalid.y;
+	float sum_color = 0.0f;
+	for (int x = 0; x < max_offset; x++)
+	{
+		for (int y = 0; y < max_offset; y++)
+		{
+			if (pingpong)
+				sum_color += TempBuffer[uint2(fetchx + x, fetchy + y)].r;
+			else
+				sum_color += TempBuffer[uint2(fetchx + x, fetchy + y)].g;
+		}
+	}
+	float4 storevalue = TempBuffer[globalid.xy];
+	if (pingpong)
+		storevalue.g = sum_color;
+	else
+		storevalue.r = sum_color;
+	TempBuffer[globalid.xy] = storevalue;
+	if (globalid.x == 0 && globalid.y == 0)
+	{
+		TotalGrayBuffer[0] = sum_color;
+	}
+}
+
+[numthreads(8, 8, 1)]
+void Error(uint3 id : SV_DispatchThreadID)
+{
+	//TempBuffer[id.xy] = Result[id.xy];
+	float input =  SourceImage[id.xy].r;
+	float thread = Result[id.xy].r;
+	float l1 = (1.0f - input) / (1.0f - soureImageGray) - (1.0f - thread) / (1.0f - currentImageGray);
+	float l2 = l1 * l1;
+	TempBuffer[id.xy] = float4(l2,l2,l2,1.0f);
+}

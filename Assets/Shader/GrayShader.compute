@@ -1,0 +1,68 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma kernel Sum
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> Result;
+RWTexture2D<float4> TempBuffer;
+Texture2D<float4> Input;
+SamplerState samplerInput;
+int textureWidth;
+int textureHeight;
+
+
+bool pingpong;
+int max_offset;
+
+RWStructuredBuffer<float> TotalGrayBuffer;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+	float2 coordinates = float2((float)id.x / (float)textureWidth, (float)id.y / (float)textureHeight);
+	float2 toCenter = coordinates - float2(0.5f, 0.5f);
+	if (length(toCenter) > 0.5f)
+	{
+		float gray = 1.0f;
+		Result[id.xy] = float4(gray, gray, gray, 1.0f);
+		TempBuffer[id.xy] = float4(gray, gray, gray, 1.0f);
+		return;
+	}
+	float4 sampleColor = Input.SampleLevel(samplerInput, coordinates, 0);
+	float3 illu = float3(0.2125f, 0.7154f, 0.0721f);
+	float gray = dot(sampleColor.xyz, illu);
+	Result[id.xy] = float4(gray, gray, gray, 1.0f);
+	TempBuffer[id.xy] = float4(gray, gray, gray	, 1.0f);
+}
+
+[numthreads(8, 8, 1)]
+void Sum(uint3 globalid : SV_DispatchThreadID)
+{
+	uint2 lauchid = uint2(globalid.x, globalid.y);
+	int fetchx = 8 * globalid.x;
+	int fetchy = 8 * globalid.y;
+	float sum_color = 0.0f;
+	for (int x = 0; x < max_offset; x++)
+	{
+		for (int y = 0; y < max_offset; y++)
+		{
+			if(pingpong)
+				sum_color += TempBuffer[uint2(fetchx + x, fetchy + y)].r;
+			else
+				sum_color += TempBuffer[uint2(fetchx + x, fetchy + y)].g;
+		}
+	}
+	float4 storevalue = TempBuffer[globalid.xy];
+	if(pingpong)
+		storevalue.g = sum_color;
+	else
+		storevalue.r = sum_color;
+	TempBuffer[globalid.xy] = storevalue;
+	if (globalid.x == 0 && globalid.y == 0)
+	{
+		TotalGrayBuffer[0] = sum_color;
+	}
+	
+}
