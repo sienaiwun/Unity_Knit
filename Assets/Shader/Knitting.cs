@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 using UnityEngine;
 
 
@@ -7,14 +9,11 @@ using UnityEngine;
 public class Knitting : MonoBehaviour
 {
     public ComputeShader shader;
-    public int TexResolution = 2048;
    
-    public Texture inputTexture;
-    public int PinsNumber = 314;
+    public int PinsNumber = 315;
     public int PathNumber = 2000;
     public GameObject inputTextureObject;
     RenderTexture tempRt;
-
     Renderer rend;
     RenderTexture myRt;
     ComputeBuffer pinsBuffer;
@@ -25,8 +24,10 @@ public class Knitting : MonoBehaviour
     bool pingpong;
     float average_gray;
     float error;
+    int TexResolution = 4;
 
-
+    public bool running = true;
+    bool writefile = true;
     public struct PinNode
     {
         public int x;
@@ -101,8 +102,15 @@ public class Knitting : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        inputImage = inputTextureObject.GetComponent<GrayShader>();
+        TexResolution = inputImage.TexResolution;
+
         myRt = new RenderTexture(TexResolution, TexResolution, 24);
         myRt.enableRandomWrite = true;
+        myRt.isPowerOfTwo = true;
+        myRt.filterMode = FilterMode.Trilinear;
+        myRt.useMipMap = true;
+        myRt.autoGenerateMips = false;
         myRt.Create();
 
         tempRt = new RenderTexture(TexResolution, TexResolution, 24, RenderTextureFormat.ARGBFloat);
@@ -114,11 +122,12 @@ public class Knitting : MonoBehaviour
 
         totalGrayBuffer = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Default);
 
-        inputImage = inputTextureObject.GetComponent<GrayShader>();
+ 
         error = 99999.0f;
         count = 0;
         InitNodes();
         InitPath();
+        running = true;
     }
 
     private void MipCompute(int stripNum)
@@ -161,12 +170,14 @@ public class Knitting : MonoBehaviour
         int clearHandle = shader.FindKernel("Clear");
         int copyHandle = shader.FindKernel("Copy");
         int errorHandle = shader.FindKernel("Error");
+        int blureHandle = shader.FindKernel("Blur");
 
-        shader.SetInt("textureWidth", myRt.width);
-        shader.SetInt("textureHeight", myRt.height);
+
+        shader.SetInt("TextureSize", myRt.width);
         shader.SetTexture(clearHandle, "Result", myRt);
         shader.Dispatch(clearHandle, myRt.width / 8, myRt.width / 8, 1);
 
+        //draw
         RandomPath();
         shader.SetBuffer(kernelHandle, "PinBuffer", pinsBuffer);
         shader.SetBuffer(kernelHandle, "PathBuffer", pathBuffer);
@@ -175,14 +186,18 @@ public class Knitting : MonoBehaviour
         shader.Dispatch(kernelHandle, PathNumber / 16, 1, 1);
 
 
+        //blur
+        shader.SetTexture(blureHandle, "Result", myRt);
+        shader.Dispatch(blureHandle, myRt.width / 8, myRt.width / 8, 1);
+
+        //copy
         shader.SetTexture(copyHandle, "TempBuffer", tempRt);
         shader.SetTexture(copyHandle, "Result", myRt);
         shader.Dispatch(copyHandle, myRt.width / 8, myRt.width / 8, 1);
-
         average_gray = GetTotalGray();
 
         //Debug.Log("input image2 gray:" + average_gray );
-
+        //compute error
         shader.SetFloat("soureImageGray", inputImage.average_gray);
         shader.SetFloat("currentImageGray", average_gray);
         shader.SetTexture(errorHandle, "SourceImage", inputImage.myRt);
@@ -201,14 +216,33 @@ public class Knitting : MonoBehaviour
             error = current_error;
             CandicateToPath();
         }
-
+        myRt.GenerateMips();
         rend.material.SetTexture("_MainTex", myRt);
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateSegmentsDrawing();
+        if(running)
+        { 
+            UpdateSegmentsDrawing();
+            writefile = true;
+        }
+        else
+        {
+            if(writefile)
+            {
+                StreamWriter sw = new StreamWriter("segments.txt");
+                foreach (int segmentid in Path)
+                {
+                    sw.Write("," + Path[segmentid]);
+                }
+                sw.WriteLine("");
+                sw.WriteLine("finished");
+                sw.Close();
+                writefile = false;
+            }
+        }
     }
 
     void OnDestroy()
