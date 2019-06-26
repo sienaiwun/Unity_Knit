@@ -244,10 +244,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: 72cc377801d74b446a33a60cfea8594d, type: 3}
-  TexResolution: 2048
-  inputTexture: {fileID: 0}
-  PinsNumber: 314
-  PathNumber: 2000
+  PinsNumber: 315
+  PathNumber: 4000
+  inputTextureObject: {fileID: 1567045218}
+  running: 0
 --- !u!64 &729690314
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -437,8 +437,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: 1d4d2efa3d56b4d499f715366d6de069, type: 3}
-  TexResolution: 2048
-  inputTexture: {fileID: 2800000, guid: da54762070e95de4584504ca14aacc5e, type: 3}
+  TexResolution: 4096
+  inputTexture: {fileID: 2800000, guid: 7b5655d4185126b41833e9db265227b5, type: 3}
+  average_gray: 0
+  myRt: {fileID: 0}
 --- !u!64 &1567045220
 MeshCollider:
   m_ObjectHideFlags: 0

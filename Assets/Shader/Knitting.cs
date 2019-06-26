@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
+using Unity.Collections.LowLevel.Unsafe;
 
 
 
@@ -63,18 +64,12 @@ public class Knitting : MonoBehaviour
 
     private void PathToCandicate()
     {
-        for (int i = 0; i < PathNumber; i++)
-        {
-            CandicatePath[i] = Path[i];
-        }
+        CandicatePath = (int [])Path.Clone();
     }
 
     private void CandicateToPath()
     {
-        for (int i = 0; i < PathNumber; i++)
-        {
-            Path[i] = CandicatePath[i];
-        }
+        Path = (int[])CandicatePath.Clone();
     }
 
     private void InitPath()
@@ -235,7 +230,7 @@ public class Knitting : MonoBehaviour
                 StreamWriter sw = new StreamWriter("segments.txt");
                 foreach (int segmentid in Path)
                 {
-                    sw.Write("," + Path[segmentid]);
+                    sw.Write("," + segmentid);
                 }
                 sw.WriteLine("");
                 sw.WriteLine("finished");
