@@ -10,6 +10,7 @@ public class GrayShader : MonoBehaviour
     [HideInInspector]
     public float average_gray;
     Renderer rend;
+    [HideInInspector]
     public RenderTexture myRt;
     RenderTexture tempRt;   
     ComputeBuffer totalGrayBuffer;
