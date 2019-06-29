@@ -191,7 +191,6 @@ public class Knitting : MonoBehaviour
         shader.Dispatch(copyHandle, myRt.width / 8, myRt.width / 8, 1);
         average_gray = GetTotalGray();
 
-        //Debug.Log("input image2 gray:" + average_gray );
         //compute error
         shader.SetFloat("soureImageGray", inputImage.average_gray);
         shader.SetFloat("currentImageGray", average_gray);
@@ -215,6 +214,20 @@ public class Knitting : MonoBehaviour
         rend.material.SetTexture("_MainTex", myRt);
     }
 
+    void SaveTexture()
+    {
+        byte[] bytes = toTexture2D(myRt).EncodeToPNG();
+        System.IO.File.WriteAllBytes("SavedScreen.png", bytes);
+    }
+
+    Texture2D toTexture2D(RenderTexture rTex)
+    {
+        Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.RGB24, false);
+        RenderTexture.active = rTex;
+        tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
+        tex.Apply();
+        return tex;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -236,7 +249,9 @@ public class Knitting : MonoBehaviour
                 sw.WriteLine("finished");
                 sw.Close();
                 writefile = false;
+                SaveTexture();
             }
+            
         }
     }
 
