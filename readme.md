@@ -11,7 +11,7 @@ This project is made for my first wedding ceremoy. I use Unity to made an implem
 ![closeup2](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup2.jpg)
 ![wip](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/wip.jpg)
 
-![sequence](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/sequence.jpg)
+![sequence](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/sequnce.jpg)
 Input parameters:
 Input image, Nails number, knitting path number, cavas resolution.
 
