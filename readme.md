@@ -4,8 +4,8 @@ This project is made for my first wedding ceremoy. I use Unity to made an implem
 
 ![input](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/input.jpg)
 ![prediction](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/prediction2.jpg)
-![realization](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/realization2.jpg))
-![closeup]
+![realization](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/realization2.jpg)
+![closeup1]
 (https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup1.jpg)
 ![closeup2]
 (https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup2.jpg)
