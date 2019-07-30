@@ -5,15 +5,13 @@ This project is made for my first wedding ceremoy. I use Unity to made an implem
 ![input](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/input.jpg)
 ![prediction](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/prediction2.jpg)
 ![realization](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/realization2.jpg)
-![closeup1]
-(https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup1.jpg)
-![closeup2]
-(https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup2.jpg)
-![wip]
-(https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/wip.jpg)
-![sequence]
-(https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/sequence.jpg)
 
+![closeup1](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup1.jpg)
+
+![closeup2](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/closeup2.jpg)
+![wip](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/wip.jpg)
+
+![sequence](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/sequence.jpg)
 Input parameters:
 Input image, Nails number, knitting path number, cavas resolution.
 
@@ -26,4 +24,4 @@ The cavas is 50 cm in diameter and 157 cm in perimeters. The nails is knocked 5 
 材料是由淘宝购得，分别是50cm直径圆形画板，0.12mm 黑色鱼线1500m，和钉子若干。
 
 ### 实施步骤。
-第一步是钉钉，我们在网上买的画板直径157cm,我们用5毫米的距离钉钉子，这样的间距是精度和工作量的一个很好的平衡，这样一共315个钉子。我们用4k个线段来模拟输入图像。本工程很更具输入的参数进行线段模拟，通过误差较真的方法生成拟合线段，文本输出模拟结果。最好更具模拟输出结果联系好即为最后作品。
+第一步是钉钉，我们在网上买的画板直径157cm,我们用5毫米的距离钉钉子，这样的间距是精度和工作量的一个很好的平衡，这样一共315个钉子。我们用4k个线段来模拟输入图像。本工程更具具输入的参数进行线段模拟，通过误差较真的方法生成拟合线段，作者的图像模拟用了10个小时生成局部最优结果。最好将模拟结果既线段排列文本输出。最后更具模拟输出结果用鱼线连起来即为最后作品。
