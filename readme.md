@@ -1,5 +1,8 @@
 # Unity_Knit
 
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Tencent/InjectFix/blob/master/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue.svg)](https://github.com/Tencent/InjectFix/pulls)
+
 This project is made for my first wedding ceremoy. I use Unity to made an implementation of [petros vrellis's knitting](http://artof01.com/vrellis/works/knit.html). The method is inspired by [Eric Heitz's Research Page](https://eheitzresearch.wordpress.com/)
 
 ![input](https://github.com/sienaiwun/Unity_Knit/blob/master/Assets/MatImages/input.jpg)
